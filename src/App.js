@@ -71,9 +71,9 @@ const jsonToEnv = (jsonStr, prevJsonText) => {
   }
 };
 
-const envToJson = envStr => {
+const envToJson = (envStr) => {
   const env = {};
-  envStr.replace(/(\w+)=(.+)/g, function($0, $1, $2) {
+  envStr.replace(/(\w+)=(.+)/g, function ($0, $1, $2) {
     env[$1] = $2;
   });
   return JSON.stringify(env, undefined, 2);
@@ -83,8 +83,19 @@ class App extends Component {
   state = {
     isJsonToEnv: true,
     editorText: "",
-    viewText: ""
+    viewText: "",
   };
+
+  componentDidMount() {
+    const mockJSON = {
+      TEST: 1,
+    };
+    const mockJSONStr = JSON.stringify(mockJSON, undefined, 2);
+    this.setState({
+      editorText: mockJSONStr,
+      viewText: jsonToEnv(mockJSONStr, ""),
+    });
+  }
 
   render() {
     const { isJsonToEnv, editorText, viewText } = this.state;
@@ -99,29 +110,29 @@ class App extends Component {
         </Header>
         <Content>
           <Editor onChange={this.changeEditor} value={editorText} />
-          <Seperator>=></Seperator>
+          <Seperator>{"=>"}</Seperator>
           <View>{viewText}</View>
         </Content>
       </Container>
     );
   }
 
-  changeEditor = e => {
+  changeEditor = (e) => {
     const value = e.target.value;
     const { isJsonToEnv, viewText } = this.state;
 
     this.setState({
       editorText: value,
-      viewText: isJsonToEnv ? jsonToEnv(value, viewText) : envToJson(value)
+      viewText: isJsonToEnv ? jsonToEnv(value, viewText) : envToJson(value),
     });
   };
 
   toggle = () => {
-    this.setState(prevState => {
+    this.setState((prevState) => {
       return {
         editorText: prevState.viewText,
         viewText: prevState.editorText,
-        isJsonToEnv: !prevState.isJsonToEnv
+        isJsonToEnv: !prevState.isJsonToEnv,
       };
     });
   };
